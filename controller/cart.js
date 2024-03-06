@@ -1,6 +1,5 @@
 const Cart = require('../model/cart');
 
-// Get all carts
 exports.getAllCarts = async (req, res) => {
     try {
         const carts = await Cart.find({});
@@ -10,7 +9,6 @@ exports.getAllCarts = async (req, res) => {
     }
 };
 
-// Get a single cart by ID
 exports.getSingleCart = async (req, res) => {
     try {
         const cart = await Cart.findOne({ _id: req.params.id });
@@ -33,7 +31,6 @@ exports.getCartsbyUserid = async (req, res) => {
     }
 };
 
-// Add a new cart
 exports.addCart = async (req, res) => {
     if (!req.body) {
         return res.status(400).json({
@@ -54,7 +51,6 @@ exports.addCart = async (req, res) => {
     }
 };
 
-// Edit an existing cart
 exports.editCart = async (req, res) => {
     if (!req.body || !req.params.id) {
         return res.status(400).json({
@@ -86,7 +82,6 @@ exports.editCart = async (req, res) => {
     }
 };
 
-// Delete a cart
 exports.deleteCart = async (req, res) => {
     if (!req.params.id) {
         return res.status(400).json({
