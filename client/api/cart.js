@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; // Correctly set your API base URL
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; 
 
 export async function addToCartApi(productDetails) {
     const userToken = localStorage.getItem('userToken');
@@ -50,7 +50,7 @@ export async function fetchCartItems() {
     const userToken = localStorage.getItem('userToken');
 
     try {
-        const response = await fetch(`${API_BASE_URL}/carts`, { // Adjusted to match a likely backend route for fetching all cart items
+        const response = await fetch(`${API_BASE_URL}/carts`, { 
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${userToken}`,
