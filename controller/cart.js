@@ -1,110 +1,107 @@
 const Cart = require('../model/cart');
 
-module.exports.getAllCarts = (req, res) => {
-	const limit = Number(req.query.limit) || 0;
-	const sort = req.query.sort == 'desc' ? -1 : 1;
-	const startDate = req.query.startdate || new Date('1970-1-1');
-	const endDate = req.query.enddate || new Date();
-
-	console.log(startDate, endDate);
-
-	Cart.find({
-		date: { $gte: new Date(startDate), $lt: new Date(endDate) },
-	})
-		.select('-_id -products._id')
-		.limit(limit)
-		.sort({ id: sort })
-		.then((carts) => {
-			res.json(carts);
-		})
-		.catch((err) => console.log(err));
+// Get all carts
+exports.getAllCarts = async (req, res) => {
+    try {
+        const carts = await Cart.find({});
+        res.json(carts);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
-module.exports.getCartsbyUserid = (req, res) => {
-	const userId = req.params.userid;
-	const startDate = req.query.startdate || new Date('1970-1-1');
-	const endDate = req.query.enddate || new Date();
-
-	console.log(startDate, endDate);
-	Cart.find({
-		userId,
-		date: { $gte: new Date(startDate), $lt: new Date(endDate) },
-	})
-		.select('-_id -products._id')
-		.then((carts) => {
-			res.json(carts);
-		})
-		.catch((err) => console.log(err));
+// Get a single cart by ID
+exports.getSingleCart = async (req, res) => {
+    try {
+        const cart = await Cart.findOne({ _id: req.params.id });
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found" });
+        }
+        res.json(cart);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
-module.exports.getSingleCart = (req, res) => {
-	const id = req.params.id;
-	Cart.findOne({
-		id,
-	})
-		.select('-_id -products._id')
-		.then((cart) => res.json(cart))
-		.catch((err) => console.log(err));
+// Get carts by user ID
+exports.getCartsbyUserid = async (req, res) => {
+    try {
+        const carts = await Cart.find({ userId: req.params.userid });
+        res.json(carts);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
-module.exports.addCart = (req, res) => {
-	if (typeof req.body == undefined) {
-		res.json({
-			status: 'error',
-			message: 'data is undefined',
-		});
-	} else {
-		//     let cartCount = 0;
-		// Cart.find().countDocuments(function (err, count) {
-		//   cartCount = count
-		//   })
+// Add a new cart
+exports.addCart = async (req, res) => {
+    if (!req.body) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Data is undefined',
+        });
+    }
 
-		//     .then(() => {
-		const cart = {
-			id: 11,
-			userId: req.body.userId,
-			date: req.body.date,
-			products: req.body.products,
-		};
-		// cart.save()
-		//   .then(cart => res.json(cart))
-		//   .catch(err => console.log(err))
-
-		res.json(cart);
-		// })
-
-		//res.json({...req.body,id:Cart.find().count()+1})
-	}
+    try {
+        const cart = await Cart.create({
+            userId: req.body.userId,
+            date: new Date(req.body.date),
+            products: req.body.products,
+        });
+        res.status(201).json(cart);
+    } catch (error) {
+        res.status(500).json({ status: 'error', message: error.message });
+    }
 };
 
-module.exports.editCart = (req, res) => {
-	if (typeof req.body == undefined || req.params.id == null) {
-		res.json({
-			status: 'error',
-			message: 'something went wrong! check your sent data',
-		});
-	} else {
-		res.json({
-			id: parseInt(req.params.id),
-			userId: req.body.userId,
-			date: req.body.date,
-			products: req.body.products,
-		});
-	}
+// Edit an existing cart
+exports.editCart = async (req, res) => {
+    if (!req.body || !req.params.id) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Something went wrong! Check your sent data',
+        });
+    }
+
+    try {
+        const cart = await Cart.findOneAndUpdate(
+            { _id: req.params.id },
+            {
+                $set: {
+                    userId: req.body.userId,
+                    date: new Date(req.body.date),
+                    products: req.body.products,
+                },
+            },
+            { new: true }
+        );
+
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found" });
+        }
+
+        res.json(cart);
+    } catch (error) {
+        res.status(500).json({ status: 'error', message: error.message });
+    }
 };
 
-module.exports.deleteCart = (req, res) => {
-	if (req.params.id == null) {
-		res.json({
-			status: 'error',
-			message: 'cart id should be provided',
-		});
-	} else {
-		Cart.findOne({ id: req.params.id })
-			.select('-_id -products._id')
-			.then((cart) => {
-				res.json(cart);
-			})
-			.catch((err) => console.log(err));
-	}
+// Delete a cart
+exports.deleteCart = async (req, res) => {
+    if (!req.params.id) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Cart ID should be provided',
+        });
+    }
+
+    try {
+        const cart = await Cart.findOneAndDelete({ _id: req.params.id });
+        if (!cart) {
+            return res.status(404).json({ status: 'error', message: 'Cart not found' });
+        }
+        res.json({ status: 'success', message: 'Cart deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ status: 'error', message: error.message });
+    }
 };
