@@ -9,10 +9,6 @@ const cartSchema = new Schema({
         ref: 'User', 
         required: true
     },
-    date: {
-        type: Date,
-        required: true
-    },
     products: [
         {
             productId: {

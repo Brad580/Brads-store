@@ -1,26 +1,29 @@
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; // Correctly set your API base URL
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-export async function addToCartApi(productDetails) {
-    const userToken = localStorage.getItem('userToken');
-    
+export async function addToCartApi(userId, product) {
     try {
-        const response = await fetch(`${API_BASE_URL}/carts/add`, {
+        const response = await fetch(`${API_BASE_URL}/carts`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userToken}`, 
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
             },
-            body: JSON.stringify(productDetails),
+            body: JSON.stringify({
+                userId: "507f191e810c19729de860ea",
+                product: {
+                    productId: product.id,
+                    quantity: product.quantity
+                }
+            }),
         });
 
         if (!response.ok) {
-            throw new Error('Failed to add item to cart');
+            throw new Error('Network response was not ok');
         }
-
         return await response.json();
     } catch (error) {
-        console.error("There's been a problem with adding the item:", error);
-        throw error; 
+        console.error('Add to cart error:', error);
+        throw error;
     }
 }
 
@@ -28,7 +31,7 @@ export async function removeFromCartApi(itemId) {
     const userToken = localStorage.getItem('userToken');
     
     try {
-        const response = await fetch(`${API_BASE_URL}/cart/${itemId}`, { 
+        const response = await fetch(`${API_BASE_URL}/cart/${itemId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${userToken}`,
@@ -50,7 +53,7 @@ export async function fetchCartItems() {
     const userToken = localStorage.getItem('userToken');
 
     try {
-        const response = await fetch(`${API_BASE_URL}/carts`, { // Adjusted to match a likely backend route for fetching all cart items
+        const response = await fetch(`${API_BASE_URL}/carts`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${userToken}`,

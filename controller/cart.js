@@ -41,7 +41,6 @@ exports.addCart = async (req, res) => {
     try {
         const cart = await Cart.create({
             userId: req.body.userId,
-            date: new Date(req.body.date),
             products: req.body.products,
         });
         res.status(201).json(cart);
@@ -64,7 +63,6 @@ exports.editCart = async (req, res) => {
             {
                 $set: {
                     userId: req.body.userId,
-                    date: new Date(req.body.date),
                     products: req.body.products,
                 },
             },
@@ -80,6 +78,7 @@ exports.editCart = async (req, res) => {
         res.status(500).json({ status: 'error', message: error.message });
     }
 };
+
 
 exports.deleteCart = async (req, res) => {
     if (!req.params.id) {

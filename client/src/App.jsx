@@ -21,7 +21,7 @@ function App() {
     const simulatedToken = "simulatedToken"; 
     localStorage.setItem('token', simulatedToken);
 
-    const simulatedUserId = 1234;
+    const simulatedUserId = "507f191e810c19729de860ea";
     setUserId(simulatedUserId);
     setIsLoggedIn(true);
   };
@@ -58,7 +58,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Welcome to Brad's Store</h1>
+      <h1>The Bradazon Store</h1>
       {!isLoggedIn ? (
         <>
           {showLogin ? (
