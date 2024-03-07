@@ -17,13 +17,11 @@ function App() {
     }
   }, [isLoggedIn, userId]);
 
-  // Directly set a simulated user ID upon "login"
   const handleLogin = () => {
-    const simulatedToken = "simulatedToken"; // Simulate token for example purposes
+    const simulatedToken = "simulatedToken"; 
     localStorage.setItem('token', simulatedToken);
 
-    // Generate a fixed or random user ID for demonstration
-    const simulatedUserId = 1234; // For consistency, use a static ID or use Math.floor(Math.random() * 10000) for a random ID
+    const simulatedUserId = 1234;
     setUserId(simulatedUserId);
     setIsLoggedIn(true);
   };
@@ -65,7 +63,7 @@ function App() {
         <>
           {showLogin ? (
             <>
-              {/* Adjust to call handleLogin instead */}
+              {}
               <button onClick={handleLogin}>Log In</button> 
               <button onClick={toggleView}>Sign Up Instead</button>
             </>

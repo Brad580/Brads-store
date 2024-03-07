@@ -15,9 +15,9 @@ function Cart({ cartItems, onRemoveFromCart }) {
         <div className="cart-container">
             <h2 className="cart-title">Your Bag</h2>
             <ul>
-                {cartItems.map((item) => (
-                    <li key={item.id} className="cart-item" data-testid="cart-item">
-                        <strong>{item.name}</strong> - Quantity: {item.quantity} - Price: ${item.price.toFixed(2)}
+                {cartItems.map((item, index) => (
+                    <li key={item.id ? item.id : index} className="cart-item" data-testid="cart-item">
+                        <strong>{item.name}</strong> - Quantity: {item.quantity} - Price: ${item.price ? item.price.toFixed(2) : 'N/A'}
                         <button onClick={() => onRemoveFromCart(item.id)}>Remove</button>
                         <p>{item.description}</p>
                     </li>
