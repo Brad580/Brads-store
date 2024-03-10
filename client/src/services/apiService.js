@@ -1,117 +1,61 @@
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const API_BASE_URL = 'https://fakestoreapi.com';
 
-const handleResponse = async (response) => {
+async function handleResponse(response) {
   if (!response.ok) {
     const error = await response.text();
     throw new Error(error || 'Something went wrong with the request');
   }
-  return response.json();
-};
-
-export async function fetchProducts() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/products`);
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('There was a problem with your fetch operation:', error);
-    throw error; 
-  }
+  return await response.json();
 }
 
-export async function login(username, password) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username, password }),
-    });
-    const data = await handleResponse(response);
-    localStorage.setItem('token', data.token);
-    return data.token;
-  } catch (error) {
-    console.error('Login error:', error);
-    throw error; 
-  }
+export async function fetchProducts() {
+  const response = await fetch(`${API_BASE_URL}/products`);
+  return handleResponse(response);
+}
+
+export async function fetchProductById(productId) {
+  const response = await fetch(`${API_BASE_URL}/products/${productId}`);
+  return handleResponse(response);
+}
+
+export async function fetchCartItems(userId) {
+  const response = await fetch(`${API_BASE_URL}/carts/user/${userId}`);
+  return handleResponse(response);
+}
+
+export async function addToCart(userId, product) {
+  console.log(`Simulated adding product to user ${userId}'s cart.`, product);
+}
+
+export async function removeFromCart(itemId) {
+  console.log(`Simulated removing item ${itemId} from cart.`);
 }
 
 export async function signup(userData) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/users/signup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    });
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('Signup error:', error);
-    throw error; 
-  }
+  console.log(`Simulated signup for user`, userData);
 }
 
-export async function addToCartApi(userId, product) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/carts`, {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      },
-      body: JSON.stringify({
-          userId,
-          product: {
-              productId: product.id,
-              quantity: product.quantity
-          }
-      }),
+export async function addNewProduct(productData) {
+  const response = await fetch(`${API_BASE_URL}/products`, {
+    method: "POST",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(productData),
   });
-  
-      if (!response.ok) {
-          throw new Error('Network response was not ok');
-      }
-      return await response.json();
-  } catch (error) {
-      console.error('Add to cart error:', error);
-      throw error;
-  }
+  return handleResponse(response);
 }
 
-
-
-export async function fetchCartItems(userId) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/carts?userId=${userId}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      },
-    });
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('Fetch cart items error:', error);
-    throw error;
-  }
+export async function updateProduct(productId, productData) {
+  const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+    method: "PUT",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(productData),
+  });
+  return handleResponse(response);
 }
 
-
-export async function removeFromCart(itemId) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/cart/${itemId}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      },
-    });
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('Remove from cart error:', error);
-    throw error;
-  }
-}
-
-export function logout() {
-  localStorage.removeItem('token');
+export async function deleteProduct(productId) {
+  const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+    method: "DELETE",
+  });
+  return handleResponse(response);
 }

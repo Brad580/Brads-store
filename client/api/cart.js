@@ -9,16 +9,17 @@ export async function addToCartApi(userId, product) {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
             },
             body: JSON.stringify({
-                userId: "507f191e810c19729de860ea",
-                product: {
-                    productId: product.id,
+                userId, 
+                products: [{
+                    productId: product.id, 
                     quantity: product.quantity
-                }
+                }]
             }),
         });
 
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            const errorBody = await response.json(); 
+            throw new Error(errorBody.message || 'Network response was not ok');
         }
         return await response.json();
     } catch (error) {
@@ -27,14 +28,12 @@ export async function addToCartApi(userId, product) {
     }
 }
 
-export async function removeFromCartApi(itemId) {
-    const userToken = localStorage.getItem('userToken');
-    
+export async function removeFromCartApi(cartId, productId) {
     try {
-        const response = await fetch(`${API_BASE_URL}/cart/${itemId}`, {
+        const response = await fetch(`${API_BASE_URL}/carts/${cartId}/product/${productId}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': `Bearer ${userToken}`,
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
             },
         });
 
@@ -49,19 +48,17 @@ export async function removeFromCartApi(itemId) {
     }
 }
 
-export async function fetchCartItems() {
-    const userToken = localStorage.getItem('userToken');
-
+export async function fetchCartItems(userId) {
     try {
-        const response = await fetch(`${API_BASE_URL}/carts`, {
-            method: 'GET',
+        const response = await fetch(`${API_BASE_URL}/carts/user/${userId}`, {
             headers: {
-                'Authorization': `Bearer ${userToken}`,
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
             },
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch cart items');
+            const errorBody = await response.json(); 
+            throw new Error(errorBody.message || 'Failed to fetch cart items');
         }
 
         return await response.json();

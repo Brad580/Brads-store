@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Cart from './components/Cart';
 import ProductList from './components/ProductList';
 import Signup from './components/Signup';
-import { addToCartApi, fetchCartItems, removeFromCart } from './services/apiService';
+import { addToCart, fetchCartItems, removeFromCart } from './services/apiService';
 import './App.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userId, setUserId] = useState(null);
+  const [userId, setUserId] = useState("");
   const [showLogin, setShowLogin] = useState(true);
   const [cartItems, setCartItems] = useState([]);
 
@@ -18,10 +18,10 @@ function App() {
   }, [isLoggedIn, userId]);
 
   const handleLogin = () => {
-    const simulatedToken = "simulatedToken"; 
+    const simulatedToken = "simulatedToken";
     localStorage.setItem('token', simulatedToken);
 
-    const simulatedUserId = "507f191e810c19729de860ea";
+    const simulatedUserId = "1";
     setUserId(simulatedUserId);
     setIsLoggedIn(true);
   };
@@ -38,7 +38,7 @@ function App() {
       return;
     }
     try {
-      await addToCartApi(userId, product);
+      await addToCart(userId, product);
       const updatedItems = await fetchCartItems(userId);
       setCartItems(updatedItems);
     } catch (error) {
@@ -63,8 +63,7 @@ function App() {
         <>
           {showLogin ? (
             <>
-              {}
-              <button onClick={handleLogin}>Log In</button> 
+              <button onClick={handleLogin}>Log In</button>
               <button onClick={toggleView}>Sign Up Instead</button>
             </>
           ) : (

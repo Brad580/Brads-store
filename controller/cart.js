@@ -1,4 +1,5 @@
 const Cart = require('../model/cart');
+const mongoose = require('mongoose');
 
 exports.getAllCarts = async (req, res) => {
     try {
@@ -23,78 +24,98 @@ exports.getSingleCart = async (req, res) => {
 
 exports.getCartsbyUserid = async (req, res) => {
     try {
-        const carts = await Cart.find({ userId: req.params.userid });
+        const carts = await Cart.find({ userId: mongoose.Types.ObjectId(req.params.userid) });
         res.json(carts);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-exports.addCart = async (req, res) => {
-    if (!req.body) {
-        return res.status(400).json({
-            status: 'error',
-            message: 'Data is undefined',
-        });
-    }
+exports.addOrUpdateCart = async (req, res) => {
+    const { userId, products } = req.body; 
 
     try {
-        const cart = await Cart.create({
-            userId: req.body.userId,
-            products: req.body.products,
+        let cart = await Cart.findOne({ userId: mongoose.Types.ObjectId(userId) });
+
+        if (!cart) {
+            
+            cart = new Cart({
+                userId: mongoose.Types.ObjectId(userId),
+                products: [],
+            });
+        }
+
+        products.forEach(({ productId, quantity }) => {
+            const productIndex = cart.products.findIndex(product => product.productId === productId);
+            if (productIndex !== -1) {
+                cart.products[productIndex].quantity += quantity;
+            } else {
+                cart.products.push({ productId, quantity });
+            }
         });
-        res.status(201).json(cart);
+
+        await cart.save();
+        res.status(200).json(cart);
     } catch (error) {
-        res.status(500).json({ status: 'error', message: error.message });
+        console.error('Error updating cart:', error);
+        res.status(500).json({ message: "Error updating cart" });
     }
 };
 
 exports.editCart = async (req, res) => {
-    if (!req.body || !req.params.id) {
-        return res.status(400).json({
-            status: 'error',
-            message: 'Something went wrong! Check your sent data',
-        });
-    }
+    const { id } = req.params;
+    const { products } = req.body; 
 
     try {
-        const cart = await Cart.findOneAndUpdate(
-            { _id: req.params.id },
-            {
-                $set: {
-                    userId: req.body.userId,
-                    products: req.body.products,
-                },
-            },
-            { new: true }
-        );
+        const updatedCart = await Cart.findByIdAndUpdate(id, { products }, { new: true });
 
-        if (!cart) {
-            return res.status(404).json({ message: "Cart not found" });
+        if (!updatedCart) {
+            return res.status(404).json({ message: 'Cart not found' });
         }
 
-        res.json(cart);
+        res.json(updatedCart);
     } catch (error) {
-        res.status(500).json({ status: 'error', message: error.message });
+        console.error('Error updating cart:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.deleteCart = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedCart = await Cart.findByIdAndDelete(id);
+
+        if (!deletedCart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
+
+        res.status(204).send(); 
+    } catch (error) {
+        console.error('Error deleting cart:', error);
+        res.status(500).json({ message: error.message });
     }
 };
 
 
-exports.deleteCart = async (req, res) => {
-    if (!req.params.id) {
-        return res.status(400).json({
-            status: 'error',
-            message: 'Cart ID should be provided',
-        });
-    }
+exports.addOrUpdateCart = async (req, res) => {
+    const { userId, productId, quantity } = req.body;
 
     try {
-        const cart = await Cart.findOneAndDelete({ _id: req.params.id });
-        if (!cart) {
-            return res.status(404).json({ status: 'error', message: 'Cart not found' });
+        let cart = await Cart.findOne({ userId: mongoose.Types.ObjectId(userId) });
+
+        const itemIndex = cart.products.findIndex(item => item.productId === productId);
+
+        if (itemIndex > -1) {
+            cart.products[itemIndex].quantity += quantity;
+        } else {
+            cart.products.push({ productId, quantity });
         }
-        res.json({ status: 'success', message: 'Cart deleted successfully' });
+
+        await cart.save();
+        res.status(200).json(cart);
     } catch (error) {
-        res.status(500).json({ status: 'error', message: error.message });
+        console.error('Error updating cart:', error);
+        res.status(500).json({ message: "Error updating cart" });
     }
 };

@@ -1,4 +1,4 @@
-use('mongodbVSCodePlaygroundDB');
+/*use('mongodbVSCodePlaygroundDB');
 
 db.carts.insertMany([
   { 
@@ -7,7 +7,6 @@ db.carts.insertMany([
       { productId: ObjectId('507f191e810c19729de860eb'), quantity: 2, price: 10 },
       { productId: ObjectId('507f191e810c19729de860ec'), quantity: 1, price: 20 }
     ]
-    // Removed the date field
   },
   { 
     userId: ObjectId('507f191e810c19729de860ed'),
@@ -38,4 +37,4 @@ const cartValue = db.carts.aggregate([
 ]).toArray();
 
 print("Total cart value for user1:");
-printjson(cartValue);
+printjson(cartValue);*/
