@@ -20,8 +20,7 @@ function App() {
   const handleLogin = () => {
     const simulatedToken = "simulatedToken";
     localStorage.setItem('token', simulatedToken);
-
-    const simulatedUserId = "1";
+    const simulatedUserId = "1"; 
     setUserId(simulatedUserId);
     setIsLoggedIn(true);
   };
@@ -56,6 +55,18 @@ function App() {
     }
   };
 
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUserId(null);
+    localStorage.removeItem('token');
+    setCartItems([]); 
+  };
+
+  const handleCheckout = () => {
+    console.log('Proceeding to checkout...');
+    alert('Proceeding to checkout... (this is a placeholder functionality)');
+  };
+
   return (
     <div className="App">
       <h1>The Bradazon Store</h1>
@@ -75,8 +86,14 @@ function App() {
         </>
       ) : (
         <>
+          <button onClick={handleLogout} className="logout-button">Log Out</button>
           <ProductList onAddToCart={handleAddToCart} />
           <Cart cartItems={cartItems} onRemoveFromCart={handleRemoveFromCart} />
+          {cartItems.length > 0 && (
+            <button onClick={handleCheckout} className="checkout-button">
+              Checkout
+            </button>
+          )}
         </>
       )}
     </div>

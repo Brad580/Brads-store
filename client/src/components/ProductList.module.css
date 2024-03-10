@@ -1,0 +1,12 @@
+body {
+    font-family: Arial, sans-serif;
+  }
+  .product-item, .cart-item {
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+  .cart-container, .product-list {
+    padding: 20px;
+  }
+  
