@@ -9,7 +9,7 @@ export async function addToCartApi(userId, product) {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
             },
             body: JSON.stringify({
-                userId, // Make sure this is a valid and existing ID
+                userId, 
                 products: [{
                     productId: product.id, 
                     quantity: product.quantity

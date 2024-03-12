@@ -44,7 +44,7 @@ body, h1, h2, h3, p, ul, li, button {
 
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #06fafa;
+  background-color: #e3e7f2cf;
 }
 
 .App {
@@ -54,11 +54,10 @@ body {
 }
 
 h1 {
-  color: #949ca7;
+  color: #464d6a;
   margin-bottom: 20px;
 }
 
-/* Header Styles */
 header {
   background-color: #131921;
   color: white;
@@ -75,7 +74,7 @@ header a {
 }
 
 .product-list, .cart-container {
-  background-color: rgb(136, 155, 224);
+  background-color: rgb(197, 203, 227);
   padding: 20px;
   margin-bottom: 20px;
 }
@@ -93,7 +92,7 @@ header a {
 }
 
 button {
-  background-color: #9cf6a2;
+  background-color: #8b8de4;
   border: 1px solid;
   border-color: #131a13 #2c322c #0c0e0c;
   color: #111;

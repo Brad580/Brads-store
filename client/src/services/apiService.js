@@ -2,11 +2,24 @@ const API_BASE_URL = 'https://fakestoreapi.com';
 
 async function handleResponse(response) {
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error || 'Something went wrong with the request');
+    const errorText = await response.text();
+    throw new Error(errorText || 'Something went wrong with the request');
   }
-  return await response.json();
+  const responseBody = await response.text(); 
+  
+  if (!responseBody.trim()) {
+    console.log('Response body is empty');
+    return {};
+  }
+  
+  try {
+    return JSON.parse(responseBody); 
+  } catch (error) {
+    console.error("Failed to parse JSON response:", responseBody);
+    throw new Error('Failed to parse JSON response');
+  }
 }
+
 
 export async function fetchProducts() {
   const response = await fetch(`${API_BASE_URL}/products`);
@@ -17,6 +30,7 @@ export async function fetchProductById(productId) {
   const response = await fetch(`${API_BASE_URL}/products/${productId}`);
   return handleResponse(response);
 }
+
 
 export async function fetchCartItems(userId) {
   const response = await fetch(`${API_BASE_URL}/carts/user/${userId}`);
