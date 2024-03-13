@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Cart from './components/Cart';
 import ProductList from './components/ProductList';
 import Signup from './components/Signup';
+import Checkout from './components/Checkout';
 import { addToCart, fetchCartItems, removeFromCart } from './services/apiService';
 import './App.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState('');
   const [showLogin, setShowLogin] = useState(true);
   const [cartItems, setCartItems] = useState([]);
 
@@ -18,9 +20,9 @@ function App() {
   }, [isLoggedIn, userId]);
 
   const handleLogin = () => {
-    const simulatedToken = "simulatedToken";
+    const simulatedToken = 'simulatedToken';
     localStorage.setItem('token', simulatedToken);
-    const simulatedUserId = "1"; 
+    const simulatedUserId = '1';
     setUserId(simulatedUserId);
     setIsLoggedIn(true);
   };
@@ -29,11 +31,13 @@ function App() {
     setShowLogin(true);
   };
 
-  const toggleView = () => setShowLogin(!showLogin);
+  const toggleView = () => {
+    setShowLogin(!showLogin);
+  };
 
   const handleAddToCart = async (product) => {
     if (!userId) {
-      console.error("User ID is missing. User must be logged in to add items to cart.");
+      console.error('User ID is missing. User must be logged in to add items to cart.');
       return;
     }
     try {
@@ -57,46 +61,52 @@ function App() {
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    setUserId(null);
+    setUserId('');
     localStorage.removeItem('token');
-    setCartItems([]); 
-  };
-
-  const handleCheckout = () => {
-    console.log('Proceeding to checkout...');
-    alert('Proceeding to checkout... (this is a placeholder functionality)');
+    setCartItems([]);
   };
 
   return (
-    <div className="App">
-      <h1>The Bradazon Store</h1>
-      {!isLoggedIn ? (
-        <>
-          {showLogin ? (
+    <Router>
+      <div className="App">
+        <h1>The Bradazon Store</h1>
+        <Routes>
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/" element={
             <>
-              <button onClick={handleLogin}>Log In</button>
-              <button onClick={toggleView}>Sign Up Instead</button>
+              {!isLoggedIn ? (
+                <>
+                  {showLogin ? (
+                    <>
+                      <button onClick={handleLogin}>Log In</button>
+                      <button onClick={toggleView}>Sign Up Instead</button>
+                    </>
+                  ) : (
+                    <>
+                      <Signup onSignupSuccess={handleSignupSuccess} />
+                      <button onClick={toggleView}>Login Instead</button>
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <button onClick={handleLogout} className="logout-button">Log Out</button>
+                  <ProductList onAddToCart={handleAddToCart} />
+                  <Cart cartItems={cartItems} onRemoveFromCart={handleRemoveFromCart} />
+                  {cartItems.length > 0 && (
+                    <button onClick={() => {
+                      window.location.href = '/checkout';
+                    }} className="checkout-button">
+                      Checkout
+                    </button>
+                  )}
+                </>
+              )}
             </>
-          ) : (
-            <>
-              <Signup onSignupSuccess={handleSignupSuccess} />
-              <button onClick={toggleView}>Login Instead</button>
-            </>
-          )}
-        </>
-      ) : (
-        <>
-          <button onClick={handleLogout} className="logout-button">Log Out</button>
-          <ProductList onAddToCart={handleAddToCart} />
-          <Cart cartItems={cartItems} onRemoveFromCart={handleRemoveFromCart} />
-          {cartItems.length > 0 && (
-            <button onClick={handleCheckout} className="checkout-button">
-              Checkout
-            </button>
-          )}
-        </>
-      )}
-    </div>
+          } />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
