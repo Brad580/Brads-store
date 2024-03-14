@@ -2,24 +2,23 @@ const API_BASE_URL = 'https://fakestoreapi.com';
 
 async function handleResponse(response) {
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || 'Something went wrong with the request');
+    try {
+      const errorText = await response.text();
+      const errorBody = errorText ? JSON.parse(errorText) : {};
+      throw new Error(errorBody.message || 'Network response was not ok');
+    } catch (error) {
+      throw new Error(error.message || 'Network response was not ok and could not parse error body');
+    }
   }
-  const responseBody = await response.text(); 
-  
-  if (!responseBody.trim()) {
-    console.log('Response body is empty');
-    return {};
-  }
-  
+
+  const text = await response.text();
   try {
-    return JSON.parse(responseBody); 
+    return text ? JSON.parse(text) : {};
   } catch (error) {
-    console.error("Failed to parse JSON response:", responseBody);
+    console.error("Failed to parse JSON response:", text);
     throw new Error('Failed to parse JSON response');
   }
 }
-
 
 export async function fetchProducts() {
   const response = await fetch(`${API_BASE_URL}/products`);
@@ -30,7 +29,6 @@ export async function fetchProductById(productId) {
   const response = await fetch(`${API_BASE_URL}/products/${productId}`);
   return handleResponse(response);
 }
-
 
 export async function fetchCartItems(userId) {
   const response = await fetch(`${API_BASE_URL}/carts/user/${userId}`);
@@ -47,6 +45,11 @@ export async function removeFromCart(itemId) {
 
 export async function signup(userData) {
   console.log(`Simulated signup for user`, userData);
+}
+
+export async function login(username, password) {
+  console.log(`Simulated login for ${username} with password ${password}.`);
+  return { token: "mockToken", userId: "mockUserId" };
 }
 
 export async function addNewProduct(productData) {

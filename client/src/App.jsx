@@ -1,112 +1,64 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Cart from './components/Cart';
-import ProductList from './components/ProductList';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import Login from './components/Login';
 import Signup from './components/Signup';
+import ProductList from './components/ProductList';
+import Cart from './components/Cart';
 import Checkout from './components/Checkout';
-import { addToCart, fetchCartItems, removeFromCart } from './services/apiService';
 import './App.css';
 
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userId, setUserId] = useState('');
-  const [showLogin, setShowLogin] = useState(true);
-  const [cartItems, setCartItems] = useState([]);
+function ProtectedRoute({ children }) {
+  const { isLoggedIn } = useAuth();
+  return isLoggedIn ? children : <Navigate to="/login" replace />;
+}
 
-  useEffect(() => {
-    if (isLoggedIn && userId) {
-      fetchCartItems(userId).then(setCartItems).catch(console.error);
-    }
-  }, [isLoggedIn, userId]);
-
-  const handleLogin = () => {
-    const simulatedToken = 'simulatedToken';
-    localStorage.setItem('token', simulatedToken);
-    const simulatedUserId = '1';
-    setUserId(simulatedUserId);
-    setIsLoggedIn(true);
-  };
-
-  const handleSignupSuccess = () => {
-    setShowLogin(true);
-  };
-
-  const toggleView = () => {
-    setShowLogin(!showLogin);
-  };
-
-  const handleAddToCart = async (product) => {
-    if (!userId) {
-      console.error('User ID is missing. User must be logged in to add items to cart.');
-      return;
-    }
-    try {
-      await addToCart(userId, product);
-      const updatedItems = await fetchCartItems(userId);
-      setCartItems(updatedItems);
-    } catch (error) {
-      console.error('Error adding item to cart:', error);
-    }
-  };
-
-  const handleRemoveFromCart = async (productId) => {
-    try {
-      await removeFromCart(productId);
-      const updatedItems = await fetchCartItems(userId);
-      setCartItems(updatedItems);
-    } catch (error) {
-      console.error('Error removing item from cart:', error);
-    }
-  };
+function Navigation() {
+  const { isLoggedIn, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUserId('');
-    localStorage.removeItem('token');
-    setCartItems([]);
+    logout();
+    navigate('/');
   };
 
   return (
-    <Router>
-      <div className="App">
-        <h1>The Bradazon Store</h1>
+    <nav>
+      <Link to="/">Home</Link>
+      {isLoggedIn ? (
+        <>
+          {" | "}
+          <Link to="/cart">Cart</Link>
+          {" | "}
+          <button onClick={handleLogout}>Logout</button>
+        </>
+      ) : (
+        <>
+          {" | "}
+          <Link to="/login">Login</Link>
+          {" | "}
+          <Link to="/signup">Signup</Link>
+        </>
+      )}
+    </nav>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Navigation />
         <Routes>
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/" element={
-            <>
-              {!isLoggedIn ? (
-                <>
-                  {showLogin ? (
-                    <>
-                      <button onClick={handleLogin}>Log In</button>
-                      <button onClick={toggleView}>Sign Up Instead</button>
-                    </>
-                  ) : (
-                    <>
-                      <Signup onSignupSuccess={handleSignupSuccess} />
-                      <button onClick={toggleView}>Login Instead</button>
-                    </>
-                  )}
-                </>
-              ) : (
-                <>
-                  <button onClick={handleLogout} className="logout-button">Log Out</button>
-                  <ProductList onAddToCart={handleAddToCart} />
-                  <Cart cartItems={cartItems} onRemoveFromCart={handleRemoveFromCart} />
-                  {cartItems.length > 0 && (
-                    <button onClick={() => {
-                      window.location.href = '/checkout';
-                    }} className="checkout-button">
-                      Checkout
-                    </button>
-                  )}
-                </>
-              )}
-            </>
-          } />
+          <Route path="/" element={<ProductList />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+          {/* Checkout routed */}
+          <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
         </Routes>
-      </div>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 
