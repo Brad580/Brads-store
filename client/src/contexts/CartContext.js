@@ -36,8 +36,12 @@ export const CartProvider = ({ children }) => {
     ));
   };
 
+  const calculateTotal = () => {
+    return cart.reduce((acc, current) => acc + current.quantity * current.price, 0);
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, increaseQuantity, decreaseQuantity }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, increaseQuantity, decreaseQuantity, calculateTotal }}>
       {children}
     </CartContext.Provider>
   );

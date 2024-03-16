@@ -1,56 +1,60 @@
-import React, { useState,  } from 'react';
+import React, { useState } from 'react';
 import { useCart } from '../contexts/CartContext'; 
+import { useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
-  const [billingInfo, setBillingInfo] = useState({
-    name: 'Bronna',
-    address: '1234 Bia Road',
-    city: 'Ningland',
-    zip: '00000',
+  const { cart, calculateTotal } = useCart(); 
+  const navigate = useNavigate();
+  
+  const [checkoutInfo, setCheckoutInfo] = useState({
+    name: '',
+    address: '',
+    city: '',
+    zip: '',
+    email: '',
+    phone: '',
+    paymentMethod: 'Credit Card', 
   });
-  const { cart, removeFromCart, increaseQuantity, decreaseQuantity } = useCart(); 
 
   const handleChange = (e) => {
-    setBillingInfo({ ...billingInfo, [e.target.name]: e.target.value });
+    setCheckoutInfo({ ...checkoutInfo, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Submitting billing info:', billingInfo);
-    console.log('Cart items for checkout:', cart); 
+    console.log('Checkout Info:', checkoutInfo);
+    console.log('Cart items for checkout:', cart);
+    console.log('Total Cost:', calculateTotal()); 
+    alert('Checkout Successful!'); 
+    navigate('/thank-you'); 
   };
 
   return (
     <div>
+      <h2>Checkout</h2>
       <form onSubmit={handleSubmit}>
-        {/* Billing Info*/}
-        <label>Name:</label>
-        <input type="text" name="name" value={billingInfo.name} onChange={handleChange} />
+        {/* Input fields for basic information */}
+        <input type="text" name="name" placeholder="Full Name" value={checkoutInfo.name} onChange={handleChange} required />
+        <input type="text" name="address" placeholder="Address" value={checkoutInfo.address} onChange={handleChange} required />
+        <input type="text" name="city" placeholder="City" value={checkoutInfo.city} onChange={handleChange} required />
+        <input type="text" name="zip" placeholder="ZIP Code" value={checkoutInfo.zip} onChange={handleChange} required />
         
-        <label>Address:</label>
-        <input type="text" name="address" value={billingInfo.address} onChange={handleChange} />
+        {/* Input fields for contact information */}
+        <input type="email" name="email" placeholder="Email" value={checkoutInfo.email} onChange={handleChange} required />
+        <input type="tel" name="phone" placeholder="Phone Number" value={checkoutInfo.phone} onChange={handleChange} required />
         
-        <label>City:</label>
-        <input type="text" name="city" value={billingInfo.city} onChange={handleChange} />
+        {/* Dropdown for payment method selection */}
+        <select name="paymentMethod" value={checkoutInfo.paymentMethod} onChange={handleChange} required>
+          <option value="Credit Card">Credit Card</option>
+          <option value="PayPal">PayPal</option>
+          <option value="Cash on Delivery">Cash on Delivery</option>
+        </select>
         
-        <label>ZIP Code:</label>
-        <input type="text" name="zip" value={billingInfo.zip} onChange={handleChange} />
-
-        <button type="submit">Checkout</button>
+        <button type="submit">Complete Checkout</button>
       </form>
 
-      {/* Display Cart Items */}
-      <h2>Review Your Bag</h2>
-      <ul>
-        {cart.map((item, index) => (
-          <li key={index}>
-            {item.title} - Quantity: {item.quantity}
-            <button onClick={() => increaseQuantity(item.id)}>+</button>
-            <button onClick={() => decreaseQuantity(item.id)}>-</button>
-            <button onClick={() => removeFromCart(item.id)}>Remove</button>
-          </li>
-        ))}
-      </ul>
+      {/* Displaying the total cost */}
+      <h3>Total Cost: ${calculateTotal().toFixed(2)}</h3>
     </div>
   );
 };

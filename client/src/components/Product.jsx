@@ -2,11 +2,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import { fetchProductById } from '../services/apiService';
 import { useCart } from '../contexts/CartContext';
 import { AuthContext } from '../contexts/AuthContext';
+import ButtonStyle from './ButtonStyle'; 
 import './Product.css'; 
 
 const Product = ({ productId }) => {
   const [product, setProduct] = useState(null);
-  const [quantity, setQuantity] = useState(1); 
+  const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const { isLoggedIn, triggerLoginModal } = useContext(AuthContext);
 
@@ -21,7 +22,7 @@ const Product = ({ productId }) => {
       triggerLoginModal();
       return;
     }
-    addToCart(product, quantity); 
+    addToCart(product, quantity);
   };
 
   const incrementQuantity = () => setQuantity(prevQuantity => prevQuantity + 1);
@@ -36,16 +37,16 @@ const Product = ({ productId }) => {
       <p>{product.description}</p>
       <p>${product.price}</p>
       <div className="quantity-controls">
-        <button onClick={decrementQuantity}>-</button>
+        <ButtonStyle onClick={decrementQuantity}>-</ButtonStyle>
         <input 
           type="number" 
           value={quantity} 
           onChange={(e) => setQuantity(Number(e.target.value))}
           min="1"
         />
-        <button onClick={incrementQuantity}>+</button>
+        <ButtonStyle onClick={incrementQuantity}>+</ButtonStyle>
       </div>
-      <button onClick={handleAddToCart}>Add to Bag</button>
+      <ButtonStyle onClick={handleAddToCart}>Add to Bag</ButtonStyle>
     </div>
   );
 };
