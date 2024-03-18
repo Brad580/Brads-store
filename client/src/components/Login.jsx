@@ -12,8 +12,8 @@ function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await login(username, password); 
-      navigate('/'); 
+      await login(username, password);
+      navigate('/');
     } catch (error) {
       console.error('Login error:', error);
     }
@@ -23,12 +23,12 @@ function Login() {
     <form onSubmit={handleSubmit} className="login-form">
       <h2>Login</h2>
       <div className="form-group">
-        <label>Username:</label>
-        <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
+        <label htmlFor="username">Username:</label>
+        <input id="username" type="text" value={username} onChange={e => setUsername(e.target.value)} />
       </div>
       <div className="form-group">
-        <label>Password:</label>
-        <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+        <label htmlFor="password">Password:</label>
+        <input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
       </div>
       <button type="submit">Login</button>
     </form>
