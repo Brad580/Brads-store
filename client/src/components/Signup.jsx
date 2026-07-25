@@ -1,55 +1,55 @@
 import React, { useState } from 'react';
-import { signup } from '../services/apiService';
+import { useAuth } from '../contexts/AuthContext';
+import { Link, useNavigate } from '../contexts/RouterContext';
 
-function Signup({ onSignupSuccess }) {
+export default function Signup() {
   const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
     email: '',
-    username: '',
     password: '',
-    name: {
-      firstname: '',
-      lastname: ''
-    },
   });
+  const [error, setError] = useState('');
+  const { signup } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
-    if (name.includes("name.")) {
-      const key = name.split(".")[1]; 
-      setFormData({
-        ...formData,
-        name: { ...formData.name, [key]: value }
-      });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    setFormData((current) => ({ ...current, [event.target.name]: event.target.value }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setError('');
     try {
-      const response = await signup(formData);
-      console.log(response); 
-      onSignupSuccess(); 
-    } catch (error) {
-      console.error('Signup error:', error);
+      await signup(formData);
+      navigate('/');
+    } catch (signupError) {
+      setError(signupError.message);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Sign Up </h2>
-      {/* Email, Username, Password fields */}
-      <input type="text" name="email" value={formData.email} onChange={handleChange} placeholder="Email" />
-      <input type="text" name="username" value={formData.username} onChange={handleChange} placeholder="Username" />
-      <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Password" />
-      {/* Name fields */}
-      <input type="text" name="name.firstname" value={formData.name.firstname} onChange={handleChange} placeholder="First Name" />
-      <input type="text" name="name.lastname" value={formData.name.lastname} onChange={handleChange} placeholder="Last Name" />
-      {/* Add other input fields as necessary */}
-      <button type="submit">Sign Up</button>
-    </form>
+    <main className="auth-page page-shell">
+      <section className="auth-intro warm">
+        <p className="eyebrow">Join Brad's Store</p>
+        <h1>A quieter way<br />to discover more.</h1>
+        <p>Create a demo account for a more personal storefront experience.</p>
+        <div className="auth-monogram">+</div>
+      </section>
+      <form className="auth-form" onSubmit={handleSubmit}>
+        <p className="eyebrow">Your account</p>
+        <h2>Create an account</h2>
+        <p className="form-note">No payment data is collected. Account details stay in this browser.</p>
+        {error && <div className="inline-error" role="alert">{error}</div>}
+        <div className="field-grid">
+          <label>First name<input name="firstName" value={formData.firstName} onChange={handleChange} required /></label>
+          <label>Last name<input name="lastName" value={formData.lastName} onChange={handleChange} /></label>
+          <label className="wide">Email address<input name="email" type="email" value={formData.email} onChange={handleChange} required /></label>
+          <label className="wide">Password<input name="password" type="password" minLength="6" value={formData.password} onChange={handleChange} required /></label>
+        </div>
+        <button className="primary-button full-width" type="submit">Create account</button>
+        <p>Already have an account? <Link to="/login">Sign in</Link></p>
+      </form>
+    </main>
   );
 }
-
-export default Signup;

@@ -1,54 +1,42 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { fetchProductById } from '../services/apiService';
+import React, { useState } from 'react';
 import { useCart } from '../contexts/CartContext';
-import { AuthContext } from '../contexts/AuthContext';
-import ButtonStyle from './ButtonStyle'; 
-import './Product.css'; 
 
-const Product = ({ productId }) => {
-  const [product, setProduct] = useState(null);
-  const [quantity, setQuantity] = useState(1);
+export default function Product({ product }) {
+  const [added, setAdded] = useState(false);
   const { addToCart } = useCart();
-  const { isLoggedIn, triggerLoginModal } = useContext(AuthContext);
 
-  useEffect(() => {
-    fetchProductById(productId)
-      .then(productData => setProduct(productData))
-      .catch(console.error);
-  }, [productId]);
-
-  const handleAddToCart = () => {
-    if (!isLoggedIn) {
-      triggerLoginModal();
-      return;
-    }
-    addToCart(product, quantity);
+  const handleAdd = () => {
+    addToCart(product);
+    setAdded(true);
+    window.setTimeout(() => setAdded(false), 1400);
   };
 
-  const incrementQuantity = () => setQuantity(prevQuantity => prevQuantity + 1);
-  const decrementQuantity = () => setQuantity(prevQuantity => Math.max(1, prevQuantity - 1));
-
-  if (!product) return <div>Loading...</div>;
-
   return (
-    <div className="product-item">
-      <img src={product.image} alt={product.title} />
-      <h3>{product.title}</h3>
-      <p>{product.description}</p>
-      <p>${product.price}</p>
-      <div className="quantity-controls">
-        <ButtonStyle onClick={decrementQuantity}>-</ButtonStyle>
-        <input 
-          type="number" 
-          value={quantity} 
-          onChange={(e) => setQuantity(Number(e.target.value))}
-          min="1"
-        />
-        <ButtonStyle onClick={incrementQuantity}>+</ButtonStyle>
+    <article className="product-card">
+      <div className="product-media">
+        <span className="product-category">{product.category}</span>
+        <img src={product.image} alt={product.title} loading="lazy" />
+        <button
+          className={`quick-add ${added ? 'added' : ''}`}
+          type="button"
+          onClick={handleAdd}
+          aria-label={`Add ${product.title} to bag`}
+        >
+          {added ? 'Added ✓' : 'Quick add +'}
+        </button>
       </div>
-      <ButtonStyle onClick={handleAddToCart}>Add to Bag</ButtonStyle>
-    </div>
+      <div className="product-info">
+        <div>
+          <h3>{product.title}</h3>
+          <p>{product.description}</p>
+        </div>
+        <div className="product-meta">
+          <strong>${Number(product.price).toFixed(2)}</strong>
+          <span aria-label={`${product.rating?.rate || 0} out of 5 stars`}>
+            ★ {product.rating?.rate || 'New'}
+          </span>
+        </div>
+      </div>
+    </article>
   );
-};
-
-export default Product;
+}
