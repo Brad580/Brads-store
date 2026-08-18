@@ -14,8 +14,8 @@ function BrandMark() {
     <Link className="brand" to="/" aria-label="Brad's Store home">
       <span className="brand-mark">B</span>
       <span>
-        <strong>BRAD'S</strong>
-        <small>OBJECTS FOR EVERYDAY</small>
+        <strong>BRAD'S SUPPLY</strong>
+        <small>USEFUL GOODS / SINCE 2026</small>
       </span>
     </Link>
   );
@@ -29,7 +29,7 @@ function Header() {
   return (
     <header className="site-header">
       <div className="announcement">
-        Complimentary shipping on orders over $75
+        FREE SHIPPING $75+ / EASY RETURNS / NEW GOODS WEEKLY
       </div>
       <div className="nav-shell">
         <BrandMark />
