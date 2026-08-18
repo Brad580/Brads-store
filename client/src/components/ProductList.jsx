@@ -70,18 +70,17 @@ export default function ProductList() {
     <main>
       <section className="hero page-shell">
         <div className="hero-copy">
-          <p className="eyebrow">The everyday collection · 2026</p>
-          <h1>Useful things.<br /><em>Beautifully chosen.</em></h1>
+          <p className="eyebrow">Issue 01 / Everyday equipment</p>
+          <h1>GOOD STUFF.<br /><em>NO FILLER.</em></h1>
           <p className="hero-intro">
-            A considered edit of wardrobe staples, clever technology, and
-            objects that earn their place in your day.
+            Clothing, tech, and daily essentials picked for usefulness—not hype.
           </p>
           <a className="primary-button" href="#new-arrivals">Explore the collection</a>
         </div>
         <div className="hero-art" aria-label="A curated collection of everyday objects">
-          <div className="hero-shape hero-shape-one">01</div>
-          <div className="hero-shape hero-shape-two">BRAD'S</div>
-          <div className="hero-note">Selected with purpose<br />Made for real life</div>
+          <div className="hero-shape hero-shape-one">CATALOG / 01</div>
+          <div className="hero-shape hero-shape-two">GOODS</div>
+          <div className="hero-note">20 pieces<br />Zero nonsense</div>
         </div>
       </section>
 
